@@ -1,34 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-typedef struct Segmento {
-    char nome[20];       // Nome do processo ou "Unused"
-    int inicio;          // Início do segmento
-    int fim;             // Fim do segmento
-    struct Segmento* prox;
-} Segmento;
+#include "../include/memory.h"
 
 Segmento* memoria = NULL;
 int TAM_MEMORIA = 0;
 
-// Função para criar um novo segmento
+// Cria e retorna um novo segmento de memória
 Segmento* criar_segmento(const char* nome, int inicio, int fim) {
-    Segmento* novo = (Segmento*)malloc(sizeof(Segmento));
-    strcpy(novo->nome, nome);
-    novo->inicio = inicio;
-    novo->fim = fim;
-    novo->prox = NULL;
+    Segmento* novo = (Segmento*)malloc(sizeof(Segmento)); // Aloca memória para o segmento
+    strcpy(novo->nome, nome);  // Copia o nome do processo ou "Unused"
+    novo->inicio = inicio;     // Define posição inicial
+    novo->fim = fim;           // Define posição final
+    novo->prox = NULL;         // Inicializa o ponteiro para o próximo como NULL
     return novo;
 }
 
-// Inicializa a memória como um único bloco livre
+// Inicializa a memória com um único grande buraco (segmento livre)
 void inicializar_memoria(int tamanho) {
-    memoria = criar_segmento("Unused", 0, tamanho - 1);
+    memoria = criar_segmento("Unused", 0, tamanho - 1); // Cria um segmento livre com todo o tamanho da memória
 }
 
-// Exibe o status atual da memória
+// Exibe todos os segmentos da memória: nome, início, fim e tamanho
 void mostrar_memoria() {
+    printf("\n"); // Linha em branco antes da exibição (deixa a saída visualmente separada)
     Segmento* atual = memoria;
     while (atual != NULL) {
         printf("Nome: %-10s | Início: %-6d | Fim: %-6d | Tamanho: %d\n",
@@ -36,14 +31,15 @@ void mostrar_memoria() {
                atual->fim - atual->inicio + 1);
         atual = atual->prox;
     }
+    printf("\n"); // Linha em branco após exibir (separa da próxima saída)
 }
 
-// Insere o processo segundo a estratégia escolhida
+// Função principal de alocação: insere um processo segundo a estratégia
 void requisitar_memoria(const char* nome, int tamanho, char estrategia) {
     Segmento* atual = memoria;
-    Segmento* escolhido = NULL;
-    Segmento* anterior = NULL;
-    Segmento* anterior_escolhido = NULL;
+    Segmento* escolhido = NULL;          // Melhor buraco encontrado
+    Segmento* anterior = NULL;           // Segmento anterior na lista
+    Segmento* anterior_escolhido = NULL; // Segmento anterior ao escolhido
 
     // Estratégia: First Fit
     if (estrategia == 'F') {
@@ -57,7 +53,6 @@ void requisitar_memoria(const char* nome, int tamanho, char estrategia) {
             atual = atual->prox;
         }
     }
-
     // Estratégia: Best Fit
     else if (estrategia == 'B') {
         int menor = TAM_MEMORIA + 1;
@@ -72,9 +67,8 @@ void requisitar_memoria(const char* nome, int tamanho, char estrategia) {
             anterior = atual;
             atual = atual->prox;
         }
-        anterior = anterior_escolhido;
+        anterior = anterior_escolhido; // Atualiza anterior com o do buraco escolhido
     }
-
     // Estratégia: Worst Fit
     else if (estrategia == 'W') {
         int maior = -1;
@@ -92,52 +86,59 @@ void requisitar_memoria(const char* nome, int tamanho, char estrategia) {
         anterior = anterior_escolhido;
     }
 
+    // Se nenhum buraco foi encontrado
     if (escolhido == NULL) {
         printf("Erro: memória insuficiente para alocar %s\n", nome);
         return;
     }
 
+    // Calcula início e fim do novo processo
     int inicio = escolhido->inicio;
     int fim = inicio + tamanho - 1;
 
-    Segmento* novo = criar_segmento(nome, inicio, fim);
+    Segmento* novo = criar_segmento(nome, inicio, fim); // Cria o segmento do processo
 
-    // Atualiza buraco remanescente
+    // Se sobrou espaço no buraco (dividimos o buraco em dois)
     if (fim < escolhido->fim) {
-        escolhido->inicio = fim + 1;
+        escolhido->inicio = fim + 1; // Move o início do buraco
         novo->prox = escolhido;
+
+        // Atualiza ponteiros
         if (anterior == NULL)
             memoria = novo;
         else
             anterior->prox = novo;
-    } else {
+    }
+    // Se o processo usou o buraco inteiro
+    else {
         novo->prox = escolhido->prox;
+
         if (anterior == NULL)
             memoria = novo;
         else
             anterior->prox = novo;
-        free(escolhido);
+
+        free(escolhido); // Remove o buraco
     }
 }
 
-// Libera a memória de um processo
+// Libera a memória de um processo, transformando em "Unused"
 void liberar_memoria(const char* nome) {
     Segmento* atual = memoria;
     while (atual != NULL) {
         if (strcmp(atual->nome, nome) == 0) {
-            strcpy(atual->nome, "Unused");
+            strcpy(atual->nome, "Unused"); // Marca o segmento como buraco
         }
         atual = atual->prox;
     }
 }
 
-// Compacta a memória unindo os segmentos "Unused" e realocando os processos
+// Junta os processos no início da memória e unifica os buracos ao final
 void compactar_memoria() {
-    Segmento* nova_lista = NULL;
-    Segmento* fim_lista = NULL;
-    int atual_inicio = 0;
+    Segmento* nova_lista = NULL; // Nova lista de segmentos
+    Segmento* fim_lista = NULL;  // Ponteiro para o último da nova lista
+    int atual_inicio = 0;        // Marca o próximo endereço disponível
 
-    // Realoca processos
     Segmento* atual = memoria;
     while (atual != NULL) {
         if (strcmp(atual->nome, "Unused") != 0) {
@@ -145,6 +146,7 @@ void compactar_memoria() {
             Segmento* novo = criar_segmento(atual->nome, atual_inicio, atual_inicio + tamanho - 1);
             atual_inicio += tamanho;
 
+            // Insere na nova lista
             if (nova_lista == NULL)
                 nova_lista = novo;
             else
@@ -154,7 +156,7 @@ void compactar_memoria() {
         atual = atual->prox;
     }
 
-    // Cria buraco final
+    // Cria um buraco com o restante da memória
     if (atual_inicio < TAM_MEMORIA) {
         Segmento* buraco = criar_segmento("Unused", atual_inicio, TAM_MEMORIA - 1);
         if (fim_lista == NULL)
@@ -163,7 +165,7 @@ void compactar_memoria() {
             fim_lista->prox = buraco;
     }
 
-    // Libera lista antiga
+    // Libera a lista antiga
     atual = memoria;
     while (atual != NULL) {
         Segmento* temp = atual;
@@ -171,49 +173,5 @@ void compactar_memoria() {
         free(temp);
     }
 
-    memoria = nova_lista;
-}
-
-// Função principal com loop de comandos
-int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        printf("Uso: %s <tamanho_memoria>\n", argv[0]);
-        return 1;
-    }
-
-    TAM_MEMORIA = atoi(argv[1]);
-    inicializar_memoria(TAM_MEMORIA);
-
-    char comando[100];
-    printf("Simulador iniciado. Tamanho: %d bytes\n", TAM_MEMORIA);
-    while (1) {
-        printf("allocator> ");
-        fgets(comando, sizeof(comando), stdin);
-
-        if (strncmp(comando, "RQ", 2) == 0) {
-            char nome[20], modo;
-            int tam;
-            sscanf(comando, "RQ %s %d %c", nome, &tam, &modo);
-            requisitar_memoria(nome, tam, modo);
-        }
-        else if (strncmp(comando, "RL", 2) == 0) {
-            char nome[20];
-            sscanf(comando, "RL %s", nome);
-            liberar_memoria(nome);
-        }
-        else if (strncmp(comando, "C", 1) == 0) {
-            compactar_memoria();
-        }
-        else if (strncmp(comando, "STAT", 4) == 0) {
-            mostrar_memoria();
-        }
-        else if (strncmp(comando, "X", 1) == 0) {
-            break;
-        }
-        else {
-            printf("Comando inválido.\n");
-        }
-    }
-
-    return 0;
+    memoria = nova_lista; // Atualiza para a nova lista compactada
 }
