@@ -156,7 +156,21 @@ allocator> STAT
 allocator> X
 ```
 
-👥 Contribuidores
+# Teste pré-pronto
+
+Para utilizar um teste já criado, rode, após compilar:
+
+```bash
+./allocator 100000 < testes/teste.txt > testes/saida.log
+```
+
+Para mostrar o resultado na tela, rode:
+
+```bash
+cat testes/saida.log
+```
+
+Contribuidores
 
 - Antônio Augusto Dantas Neto: colaborou na implementação do Makefile, auxiliou na revisão e modularização do código-fonte, além de participar da validação de uso de memória e testes de execução.
 
