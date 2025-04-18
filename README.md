@@ -10,9 +10,9 @@ Ele implementa as três principais estratégias de alocação contígua:
 - **Worst Fit**: aloca no maior espaço de memória disponível.
 
 Além disso, o simulador permite:
-- **liberar memória de processos**;
-- **compactar a memória**, realocando processos e unificando espaços;
-- **visualizar o estado atual da memória**.
+- **Liberar memória de processos**;
+- **Compactar a memória**, realocando processos e unificando espaços;
+- **Visualizar o estado atual da memória**.
 
 É uma ferramenta didática que mostra, de forma clara e interativa, os efeitos de diferentes estratégias de alocação e o impacto da fragmentação.
 
@@ -22,7 +22,7 @@ Além disso, o simulador permite:
 
 ![Exemplo da Interface no Terminal](exemplo-interface.png)
 
-> A imagem acima mostra uma sessão no terminal com comandos sendo executados e a memória sendo exibida após alocação, liberação e compactação.
+> A imagem (ainda não tem kkk) acima mostra uma sessão no terminal com comandos sendo executados e a memória sendo exibida após alocação, liberação e compactação.
 
 ---
 
@@ -34,9 +34,13 @@ Além disso, o simulador permite:
 
 ### Compilação com Makefile:
 
+Abra o terminal no diretório do projeto e utilize os seguintes comandos:
+
+```bash
 make         # compila
 make run     # executa com 1MB (esse valor pode ser modificado dentro do arquivo makefile)
 make clean   # remove o executável
+```
 
 ### Instruções de uso
 
@@ -44,33 +48,47 @@ Você interage com o programa por meio de comandos no terminal:
 
 Explicação de cada comando:
 
-#### RQ <nome> <tamanho> <F|B|W>
+### 1. `RQ <nome> <tamanho> <F|B|W>`
 
 RQ = Request (Solicitação de alocação de memória)
 
-Esse comando serve para alocar um bloco de memória para um processo com o nome e o tamanho especificados, usando uma das três estratégias:
+- `<nome>`: nome do processo a ser alocado.
+- `<tamanho>`: tamanho em bytes da memória a ser alocada.
+- `<F|B|W>`: estratégia de alocação a ser utilizada:
 
-1. First Fit (F): usa o primeiro espaço de memória que couber
+  - First Fit (F): usa o primeiro espaço de memória que couber
 
-2. Best Fit (B): usa o menor espaço de memória que couber
+  - Best Fit (B): usa o menor espaço de memória que couber
 
-3. Worst Fit (W): usa o maior espaço de memória disponível
+  - Worst Fit (W): usa o maior espaço de memória disponível
 
-Exemplo: RQ P1 10000 F
+Esse comando serve para alocar um bloco de memória para um processo com o nome e o tamanho especificados, usando uma das três estratégias.
 
-Aloca 10.000 bytes para o processo P1 usando a estratégia First Fit.
+Exemplo de uso:
 
-##### RL <nome>
+```bash
+RQ P1 10000 F
+```
+
+Explicação: aloca 10.000 bytes para o processo P1 usando a estratégia First Fit.
+
+### 2. RL <nome>
 
 RL = Release (Liberação de memória)
 
+`<nome>`: nome do processo cuja memória será liberada.
+
 Libera a memória ocupada pelo processo com o nome especificado. Após isso, o espaço usado por ele se torna um espaço livre (Unused).
 
-Exemplo: RL P1
+Exemplo de uso: 
 
-Libera a memória do processo P1.
+```bash
+RL P1
+```
 
-#### C
+Explicação: libera a memória do processo P1.
+
+### 3. C
 
 C = Compact (Compactar a memória)
 
@@ -82,13 +100,15 @@ Compacta a memória, ou seja:
 
 Isso ajuda a reduzir a fragmentação externa, quando há espaços de memória disponíveis para serem alocadoa a determinado processo, mas não formam um espaço contíguo de memória.
 
-Exemplo:
+Exemplo de uso:
 
+```bash
 C
+```
 
-Executa a compactação da memória.
+Explicação: executa a compactação da memória.
 
-#### STAT
+### 4. STAT
 
 STAT = Status da memória
 
@@ -96,30 +116,37 @@ Mostra, de forma organizada, a lista de segmentos da memória atual, incluindo:
 
 - Nome do processo (ou "Unused")
 
-- Início e fim
+- Endereço de início
+
+- Endereço de fim
 
 - Tamanho de cada bloco
 
-Exemplo:
+Exemplo de uso:
 
+```bash
 STAT
+```
 
-Mostra o mapa da memória atual.
+Explicação: mostra o mapa da memória atual.
 
-#### X
+### 5. X
 
 X = Exit
 
 Finaliza o programa. Encerra o simulador de forma segura.
 
-Exemplo:
+Exemplo de uso:
 
+```bash
 X
+```
 
-Fecha o simulador.
+Explicação: fecha o simulador.
 
 ### Exemplo de Sessão Completa
 
+```bash
 allocator> RQ P1 30000 F
 allocator> RQ P2 40000 B
 allocator> STAT
@@ -127,11 +154,12 @@ allocator> RL P1
 allocator> C
 allocator> STAT
 allocator> X
+```
 
-👥 Quem fez o quê
+👥 Contribuidores
 
-Antônio Augusto Dantas Neto: implementação do Makefile, validação do uso de memória, revisão do código e suporte à documentação.
+- Antônio Augusto Dantas Neto: colaborou na implementação do Makefile, auxiliou na revisão e modularização do código-fonte, além de participar da validação de uso de memória e testes de execução.
 
-Deivily Breno Silva Carneiro: desenvolvimento do código principal em C, implementação das estratégias de alocação e compactação.
+- Deivily Breno Silva Carneiro: responsável pela maior parte da implementação em C, incluindo as estratégias de alocação (First Fit, Best Fit, Worst Fit), liberação e compactação da memória. Também atuou na depuração e otimização da lógica.
 
-Lucas Gabriel Fontes da Silva: estruturação geral do projeto, criação do README.md, testes manuais no terminal e divisão de tarefas.
+- Lucas Gabriel Fontes da Silva:  estruturou o projeto no GitHub, criou o README.md, organizou os diretórios (src, include, testes, obj), realizou testes manuais e automatizados, e coordenou a divisão e integração das tarefas entre os membros.
