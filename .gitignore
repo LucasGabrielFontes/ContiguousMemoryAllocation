@@ -1,0 +1,25 @@
+# Binários
+allocator
+
+# Objetos compilados
+obj/
+*.o
+
+# Arquivos de saída e logs
+saida.log
+*.log
+
+# Diretório de build (caso adicione no futuro)
+build/
+
+# Arquivos temporários do sistema
+*~
+*.swp
+.DS_Store
+Thumbs.db
+
+# Arquivos do VS Code
+.vscode/
+
+# Arquivos de teste que não precisam versionar (se for o caso)
+testes/saida*.txt
