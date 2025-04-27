@@ -1,7 +1,7 @@
-#include <stdio.h>      // Para entrada e saída (printf, fgets, etc.)
-#include <stdlib.h>     // Para malloc, free, atoi
-#include <string.h>     // Para manipulação de strings (strcmp, strcpy, etc.)
-#include <unistd.h>     // Para isatty()
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "../include/memory.h"
 
 // Função principal: interface do terminal com o usuário
@@ -13,43 +13,66 @@ int main(int argc, char* argv[]) {
     }
 
     // Converte o argumento de tamanho para inteiro
-    TAM_MEMORIA = atoi(argv[1]);
+    int tam_memoria = atoi(argv[1]);
+    if (tam_memoria <= 0) {
+        printf("Erro: tamanho da memória deve ser positivo.\n");
+        return 1;
+    }
 
     // Inicializa a memória com um único buraco do tamanho total
-    inicializar_memoria(TAM_MEMORIA);
+    inicializar_memoria(tam_memoria);
 
-    // Buffer para armazenar o comando digitado ou lido
+    // Buffer para armazenar o comando
     char comando[100];
 
     // Mensagem inicial do simulador
     printf("Simulador iniciado. Tamanho: %d bytes\n", TAM_MEMORIA);
+    printf("Comandos: RQ <nome> <tamanho> <F|B|W>, RL <nome>, C, STAT, X\n");
 
     // Loop principal do simulador
     while (1) {
-        // Exibe o prompt apenas se estiver rodando no modo interativo (teclado)
+        // Exibe o prompt apenas no modo interativo
         if (isatty(fileno(stdin))) {
             printf("\nallocator> ");
         }
 
-        // Lê o comando do usuário ou do arquivo (stdin)
+        // Lê o comando
         if (!fgets(comando, sizeof(comando), stdin)) {
-            break; // Encerra o loop se EOF for atingido (fim do arquivo)
+            break; // Encerra se EOF for atingido
         }
 
-        // Remove o caractere de nova linha ('\n') do final do comando, se existir
+        // Remove o caractere de nova linha
         comando[strcspn(comando, "\n")] = 0;
 
         // Processa comando: alocar memória
         if (strncmp(comando, "RQ", 2) == 0) {
             char nome[20], modo;
             int tam;
-            sscanf(comando, "RQ %s %d %c", nome, &tam, &modo);
+            if (sscanf(comando, "RQ %s %d %c", nome, &tam, &modo) != 3) {
+                printf("Erro: formato inválido. Use: RQ <nome> <tamanho> <F|B|W>\n");
+                continue;
+            }
+            if (tam <= 0) {
+                printf("Erro: tamanho deve ser positivo.\n");
+                continue;
+            }
+            if (modo != 'F' && modo != 'B' && modo != 'W') {
+                printf("Erro: estratégia deve ser F, B ou W.\n");
+                continue;
+            }
+            if (strlen(nome) >= 20) {
+                printf("Erro: nome do processo muito longo.\n");
+                continue;
+            }
             requisitar_memoria(nome, tam, modo);
         }
         // Processa comando: liberar memória
         else if (strncmp(comando, "RL", 2) == 0) {
             char nome[20];
-            sscanf(comando, "RL %s", nome);
+            if (sscanf(comando, "RL %s", nome) != 1) {
+                printf("Erro: formato inválido. Use: RL <nome>\n");
+                continue;
+            }
             liberar_memoria(nome);
         }
         // Processa comando: compactar memória
@@ -64,10 +87,18 @@ int main(int argc, char* argv[]) {
         else if (strncmp(comando, "X", 1) == 0) {
             break;
         }
-        // Qualquer outro comando não reconhecido (exceto linha vazia)
+        // Qualquer outro comando não reconhecido
         else if (strlen(comando) > 0) {
             printf("Comando inválido.\n");
         }
+    }
+
+    // Libera a memória
+    Segmento* atual = memoria;
+    while (atual != NULL) {
+        Segmento* temp = atual;
+        atual = atual->prox;
+        free(temp);
     }
 
     return 0;
