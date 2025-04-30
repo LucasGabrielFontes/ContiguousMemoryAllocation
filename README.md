@@ -148,7 +148,7 @@ allocator> X
 Um teste pré-pronto está disponível em `testes/teste.txt`. Para executá-lo:
 
 ```bash
-./allocator 1000 < testes/teste.txt > testes/saida.log
+./allocator 100000 < testes/teste.txt > testes/saida.log
 ```
 
 Para visualizar o resultado:
@@ -159,15 +159,15 @@ cat testes/saida.log
 ### Criando Novos Testes
 Crie um arquivo de texto com comandos (um por linha) e redirecione para o programa:
 ```bash
-./allocator 1000 < seu_teste.txt
+./allocator 100000 < seu_teste.txt
 ```
 
 ---
 
 ## Contribuidores
-- **Antônio Augusto Dantas Neto**: Revisou e modularizou o código-fonte, validou o uso de memória e realizou testes de execução.
-- **Deivily Breno Silva Carneiro**: Implementou as estratégias de alocação (First Fit, Best Fit, Worst Fit), liberação, compactação, mesclagem de buracos, validação de entrada e logging. Atuou na depuração e otimização.
-- **Lucas Gabriel Fontes da Silva**: Estruturou o projeto no GitHub, criou o README, organizou diretórios (`src`, `include`, `testes`), implementou a interface gráfica (SDL2), adicionou métricas de fragmentação e coordenou a integração das tarefas.
+- **Antônio Augusto Dantas Neto**: foi responsável por toda a lógica de execução do simulador, ligando o sistema de leitura dos comandos à execução das funções da memória, além de organizar a estrutura principal do código e os testes usados.
+- **Deivily Breno Silva Carneiro**: ficou encarregado da visualização dos resultados no terminal, da documentação e da validação do código no ambiente Linux, além de garantir que a apresentação gráfica estivesse clara e fiel à simulação.
+- **Lucas Gabriel Fontes da Silva**: foi responsável por toda a parte lógica do gerenciamento da memória, incluindo as estratégias de alocação e liberação, manipulação da lista encadeada de segmentos e tratamento da fragmentação.
 
 ---
 
