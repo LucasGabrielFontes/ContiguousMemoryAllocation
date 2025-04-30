@@ -24,12 +24,10 @@ Este projeto é um simulador de **alocação contígua de memória**, desenvolvi
 ## Imagem da Interface
 
 ### Terminal
-![Exemplo da Interface no Terminal](exemplo-terminal.png)
-
-*A saída do terminal mostra a tabela de segmentos, um mapa gráfico (# para processos, . para buracos) e estatísticas, com cores para facilitar a leitura.*
+![Exemplo da Interface no Terminal](images/terminal.png)
 
 ### Gráfica (SDL2)
-![Exemplo da Interface Gráfica](exemplo-gui.png)
+![Exemplo da Interface Gráfica](images/interface.png)
 
 *A interface gráfica exibe processos como retângulos verdes e buracos como retângulos amarelos, atualizando em tempo real após cada comando.*
 
