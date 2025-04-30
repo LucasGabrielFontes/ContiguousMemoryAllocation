@@ -165,9 +165,9 @@ Crie um arquivo de texto com comandos (um por linha) e redirecione para o progra
 ---
 
 ## Contribuidores
-- **Antônio Augusto Dantas Neto**: foi responsável por toda a lógica de execução do simulador, ligando o sistema de leitura dos comandos à execução das funções da memória, além de organizar a estrutura principal do código e os testes usados.
-- **Deivily Breno Silva Carneiro**: ficou encarregado da visualização dos resultados no terminal, da documentação e da validação do código no ambiente Linux, além de garantir que a apresentação gráfica estivesse clara e fiel à simulação.
-- **Lucas Gabriel Fontes da Silva**: foi responsável por toda a parte lógica do gerenciamento da memória, incluindo as estratégias de alocação e liberação, manipulação da lista encadeada de segmentos e tratamento da fragmentação.
+- **Antônio Augusto Dantas Neto**: foi responsável por toda a parte lógica do gerenciamento da memória, incluindo as estratégias de alocação e liberação, manipulação da lista encadeada de segmentos e tratamento da fragmentação.
+- **Deivily Breno Silva Carneiro**: foi responsável por toda a lógica de execução do simulador, ligando o sistema de leitura dos comandos à execução das funções da memória, além de organizar a estrutura principal do código e os testes usados.
+- **Lucas Gabriel Fontes da Silva**: ficou encarregado da visualização dos resultados no terminal, da documentação e da validação do código no ambiente Linux, além de garantir que a apresentação gráfica estivesse clara e fiel à simulação.
 
 ---
 
